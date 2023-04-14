@@ -12,6 +12,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 // Функция поиска заметок
@@ -63,13 +64,13 @@ func ConnectDB() (*sqlx.DB, error) {
 			os.Getenv("DB_NAME"),
 			os.Getenv("DB_PASSWORD")))
 	if err != nil {
-		return nil, errors.New("Internal Server Error")
+		return nil, errors.New("failed to connect")
 	}
 
 	// Проверка подключения
 	err = db.Ping()
 	if err != nil {
-		return nil, errors.New("Internal Server Error")
+		return nil, errors.New("failed to ping db")
 	}
 
 	return db, nil
@@ -88,6 +89,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 		json, _ := json.Marshal(map[string]string{"Error": err.Error()})
 		w.Write(json)
 		log.Printf("connectDB error: %s", err)
+		return
 	}
 
 	// Поиск заметок
@@ -97,6 +99,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 		json, _ := json.Marshal(map[string]string{"Error": "Internal Server Error"})
 		w.Write(json)
 		log.Printf("searchNotes error: %s", err)
+		return
 	}
 
 	// Форматирование и отправка заметок

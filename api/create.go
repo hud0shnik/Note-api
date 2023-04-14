@@ -9,14 +9,15 @@ import (
 	"time"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 )
 
 // Структура заметки
 type Note struct {
-	Id     int    `json:"id"`
-	UserId int    `json:"userId"`
-	Note   string `json:"note"`
-	Time   string `json:"time"`
+	Id           int    `json:"id"`
+	UserId       int    `json:"userId"`
+	Note         string `json:"note"`
+	CreationTime string `json:"creationTime"`
 }
 
 // Функция создания заметки
@@ -49,6 +50,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		json, _ := json.Marshal(map[string]string{"Error": err.Error()})
 		w.Write(json)
 		log.Printf("connectDB error: %s", err)
+		return
 	}
 
 	// Получение статистики, форматирование и отправка
