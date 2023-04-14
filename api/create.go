@@ -12,6 +12,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Структура ошибки
+type ApiError struct {
+	Error string `json:"error"`
+}
+
 // Структура заметки
 type Note struct {
 	Id           int    `json:"id"`
@@ -47,7 +52,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	db, err := ConnectDB()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json, _ := json.Marshal(map[string]string{"Error": err.Error()})
+		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
 		w.Write(json)
 		log.Printf("connectDB error: %s", err)
 		return
@@ -57,11 +62,11 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	jsonResp, err := json.Marshal(CreateNote(db, r.URL.Query()))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json, _ := json.Marshal(map[string]string{"Error": "Internal Server Error"})
+		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
 		w.Write(json)
 		log.Printf("json.Marshal error: %s", err)
 	} else {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusCreated)
 		w.Write(jsonResp)
 	}
 
