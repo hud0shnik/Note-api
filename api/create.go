@@ -17,6 +17,11 @@ type ApiError struct {
 	Error string `json:"error"`
 }
 
+// Структура респонса
+type CreateResponse struct {
+	Status string `json:"status"`
+}
+
 // Структура заметки
 type Note struct {
 	Id           int    `json:"id"`
@@ -59,7 +64,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получение статистики, форматирование и отправка
-	jsonResp, err := json.Marshal(CreateNote(db, r.URL.Query()))
+	jsonResp, err := json.Marshal(CreateResponse{Status: "Created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
