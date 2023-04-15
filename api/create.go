@@ -63,6 +63,16 @@ func Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Создание заметки
+	err = CreateNote(db, r.URL.Query())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
+		w.Write(json)
+		log.Printf("createNote error: %s", err)
+		return
+	}
+
 	// Получение статистики, форматирование и отправка
 	jsonResp, err := json.Marshal(CreateResponse{Status: "Created"})
 	if err != nil {
