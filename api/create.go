@@ -18,7 +18,7 @@ type ApiError struct {
 }
 
 // Структура респонса
-type CreateResponse struct {
+type GoodResponse struct {
 	Status string `json:"status"`
 }
 
@@ -31,7 +31,7 @@ type Note struct {
 }
 
 // Функция создания заметки
-func CreateNote(db *sqlx.DB, values url.Values) error {
+func createNote(db *sqlx.DB, values url.Values) error {
 
 	// Проверка на наличие параметров
 	if !values.Has("userId") || !values.Has("note") {
@@ -64,7 +64,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Создание заметки
-	err = CreateNote(db, r.URL.Query())
+	err = createNote(db, r.URL.Query())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
@@ -74,7 +74,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Получение статистики, форматирование и отправка
-	jsonResp, err := json.Marshal(CreateResponse{Status: "Created"})
+	jsonResp, err := json.Marshal(GoodResponse{Status: "Created"})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})

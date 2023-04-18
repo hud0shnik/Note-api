@@ -16,7 +16,7 @@ import (
 )
 
 // Функция поиска заметок
-func SearchNotes(db *sqlx.DB, values url.Values) ([]Note, error) {
+func searchNotes(db *sqlx.DB, values url.Values) ([]Note, error) {
 
 	// Начало запроса и слайс параметров
 	query := "SELECT * FROM notes"
@@ -93,7 +93,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Поиск заметок
-	notes, err := SearchNotes(db, r.URL.Query())
+	notes, err := searchNotes(db, r.URL.Query())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json, _ := json.Marshal(ApiError{Error: "Internal Server Error"})
