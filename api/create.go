@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -52,6 +53,14 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 	// Передача в заголовок респонса типа данных
 	w.Header().Set("Content-Type", "application/json")
+
+	// Проверка на попытку SQL-инъекций
+	if strings.ContainsAny(r.URL.String(), "%'") {
+		w.WriteHeader(http.StatusBadRequest)
+		json, _ := json.Marshal(ApiError{Error: "Bad Request"})
+		w.Write(json)
+		return
+	}
 
 	// Подключение к БД
 	db, err := ConnectDB()
